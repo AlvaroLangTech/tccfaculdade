@@ -1,3 +1,10 @@
+/**
+ * 🎓 ROTEIRO DA DEMONSTRAÇÃO PRÁTICA (VÍDEO):
+ * 1. Tente cadastrar com senha simples (ex: 12345) e mostre o erro.
+ * 2. Crie uma conta real e mostre que o app te leva para a Home.
+ * "Vejam que o sistema barra senhas fracas e cria a conta de forma assíncrona no Firebase."
+ */
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';

@@ -1,7 +1,10 @@
-// ============================================================
-// COMPONENTE: CampoTexto (EVOLUÍDO)
-// Agora suporta feedback de erro em tempo real (HU1)
-// ============================================================
+/**
+ * 🎓 EXPLICAÇÃO PARA O VÍDEO (UX SÊNIOR):
+ * "Este é o meu componente de Campo de Texto reutilizável."
+ * "Eu o evoluí para que ele aceite uma propriedade chamada 'erro'."
+ * "Se houver um erro de validação (como a senha ser fraca), o componente muda a borda para VERMELHO"
+ * "e exibe a mensagem de ajuda logo abaixo, sem travar a tela com alertas chatos."
+ */
 
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';

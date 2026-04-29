@@ -1,16 +1,16 @@
-// ============================================================
-// LAYOUT RAIZ DO APP — ROUTE GUARD (HU2)
-// Redireciona o usuário baseado no estado de autenticação:
-// - Não logado → vai para a tela de Login
-// - Logado → vai para a tela inicial (Home)
-// ============================================================
+/**
+ * 🎓 EXPLICAÇÃO PARA O VÍDEO (REQUISITO HU2 - ROUTE GUARD):
+ * "Aqui implementei o segurança do app, chamado de Route Guard."
+ * "O sistema monitora o estado de autenticação do Firebase."
+ * "Se o usuário não estiver logado, ele é automaticamente impedido de acessar a Home."
+ * "Isso garante que dados financeiros só sejam vistos por quem tem conta."
+ */
 
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
-// Componente que monitora o estado de auth e redireciona as rotas
 function ControleDeRota() {
   const { usuario, carregando } = useAuth();
   const segments = useSegments(); // Qual grupo de rota está ativo
