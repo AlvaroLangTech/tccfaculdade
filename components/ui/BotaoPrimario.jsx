@@ -1,37 +1,56 @@
-// ============================================================
-// COMPONENTE: BotaoPrimario
-// Botão reutilizável com suporte a estado de carregamento
-// Usado em: Login, Cadastro, RecuperarSenha, Perfil
-//
-// Props:
-//   titulo     → texto exibido no botão
-//   onPress    → função executada ao clicar
-//   carregando → se true, exibe spinner (ActivityIndicator)
-//   cor        → cor de fundo do botão (padrão: azul)
-// ============================================================
+import React from "react";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 
-import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
-
-export default function BotaoPrimario({ titulo, onPress, carregando = false, cor = '#2563EB' }) {
+export default function BotaoPrimario({
+  titulo,
+  onPress,
+  carregando,
+  cor = "#2563EB",
+}) {
   return (
     <TouchableOpacity
-      style={[estilos.botao, { backgroundColor: cor }, carregando && estilos.desabilitado]}
+      style={[estilos.botao, { backgroundColor: cor }]}
       onPress={onPress}
       disabled={carregando}
-      activeOpacity={0.85}
+      activeOpacity={0.8}
     >
-      {/* Se estiver carregando, mostra o spinner. Caso contrário, o texto */}
-      {carregando
-        ? <ActivityIndicator color="#fff" />
-        : <Text style={estilos.texto}>{titulo}</Text>
-      }
+      {carregando ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <Text style={estilos.texto}>{titulo}</Text>
+      )}
     </TouchableOpacity>
   );
 }
 
 const estilos = StyleSheet.create({
-  botao:       { borderRadius: 12, padding: 16, alignItems: 'center', justifyContent: 'center' },
-  desabilitado:{ opacity: 0.65 },
-  texto:       { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  botao: {
+    width: "100%",
+    height: 52,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  texto: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
 });

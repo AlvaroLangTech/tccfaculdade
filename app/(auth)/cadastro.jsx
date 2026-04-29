@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { Link } from 'expo-router';
-import { auth, db } from '../../services/firebase';
-import { validarEmail, validarSenhaForte } from '../../utils/validacoes';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { Link } from "expo-router";
+import { auth, db } from "../../services/firebase";
+import { validarEmail, validarSenhaForte } from "../../utils/validacoes";
 
-import CabecalhoAuth  from '../../components/ui/CabecalhoAuth';
-import CardFormulario from '../../components/ui/CardFormulario';
-import CampoTexto     from '../../components/ui/CampoTexto';
-import BotaoPrimario  from '../../components/ui/BotaoPrimario';
+import CabecalhoAuth from "../../components/ui/CabecalhoAuth";
+import CardFormulario from "../../components/ui/CardFormulario";
+import CampoTexto from "../../components/ui/CampoTexto";
+import BotaoPrimario from "../../components/ui/BotaoPrimario";
 
 export default function TelaCadastro() {
-  const [nome, setNome]             = useState('');
-  const [email, setEmail]           = useState('');
-  const [senha, setSenha]           = useState('');
-  const [confirmarSenha, setConfirmar] = useState('');
-  const [erros, setErros]           = useState({});
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmar] = useState("");
+  const [erros, setErros] = useState({});
   const [carregando, setCarregando] = useState(false);
 
   const fazerCadastro = async () => {
     setErros({});
     let novosErros = {};
 
-    if (!nome.trim())             novosErros.nome = 'Informe seu nome';
-    if (!validarEmail(email))     novosErros.email = 'E-mail inválido';
-    if (!validarSenhaForte(senha)) novosErros.senha = 'Senha fraca (letras, números e símbolos)';
-    if (senha !== confirmarSenha)  novosErros.confirmar = 'As senhas não coincidem';
+    if (!nome.trim()) novosErros.nome = "Informe seu nome";
+    if (!validarEmail(email)) novosErros.email = "E-mail inválido";
+    if (!validarSenhaForte(senha))
+      novosErros.senha = "Senha fraca (letras, números e símbolos)";
+    if (senha !== confirmarSenha)
+      novosErros.confirmar = "As senhas não coincidem";
 
     if (Object.keys(novosErros).length > 0) {
       setErros(novosErros);
@@ -38,17 +48,17 @@ export default function TelaCadastro() {
       const { user } = await createUserWithEmailAndPassword(auth, email, senha);
       await updateProfile(user, { displayName: nome });
 
-      await setDoc(doc(db, 'usuarios', user.uid), {
+      await setDoc(doc(db, "usuarios", user.uid), {
         nome,
         email,
-        fotoPerfil: '',
+        fotoPerfil: "",
         dataCadastro: serverTimestamp(),
       });
     } catch (erro) {
-      if (erro.code === 'auth/email-already-in-use') {
-        setErros({ email: 'E-mail já cadastrado' });
+      if (erro.code === "auth/email-already-in-use") {
+        setErros({ email: "E-mail já cadastrado" });
       } else {
-        Alert.alert('Erro', 'Erro ao criar conta');
+        Alert.alert("Erro", "Erro ao criar conta");
       }
     } finally {
       setCarregando(false);
@@ -56,9 +66,14 @@ export default function TelaCadastro() {
   };
 
   return (
-    <KeyboardAvoidingView style={estilos.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={estilos.scroll} keyboardShouldPersistTaps="handled">
-
+    <KeyboardAvoidingView
+      style={estilos.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={estilos.scroll}
+        keyboardShouldPersistTaps="handled"
+      >
         <CabecalhoAuth
           icone="person-add"
           titulo="Criar Conta"
@@ -67,28 +82,57 @@ export default function TelaCadastro() {
         />
 
         <CardFormulario titulo="Dados de Acesso">
-          <CampoTexto label="Nome" value={nome} onChange={setNome} erro={erros.nome} />
-          <CampoTexto label="E-mail" value={email} onChange={setEmail} tipo="email" erro={erros.email} />
-          <CampoTexto label="Senha" value={senha} onChange={setSenha} tipo="senha" erro={erros.senha} />
-          <CampoTexto label="Confirmar" value={confirmarSenha} onChange={setConfirmar} tipo="senha" erro={erros.confirmar} />
+          <CampoTexto
+            label="Nome"
+            value={nome}
+            onChange={setNome}
+            erro={erros.nome}
+          />
+          <CampoTexto
+            label="E-mail"
+            value={email}
+            onChange={setEmail}
+            tipo="email"
+            erro={erros.email}
+          />
+          <CampoTexto
+            label="Senha"
+            value={senha}
+            onChange={setSenha}
+            tipo="senha"
+            erro={erros.senha}
+          />
+          <CampoTexto
+            label="Confirmar"
+            value={confirmarSenha}
+            onChange={setConfirmar}
+            tipo="senha"
+            erro={erros.confirmar}
+          />
 
-          <BotaoPrimario titulo="Criar Conta" onPress={fazerCadastro} carregando={carregando} cor="#059669" />
+          <BotaoPrimario
+            titulo="Criar Conta"
+            onPress={fazerCadastro}
+            carregando={carregando}
+            cor="#059669"
+          />
 
           <View style={estilos.rodape}>
             <Text style={estilos.textoRodape}>Já tem conta? </Text>
-            <Link href="/(auth)/login" style={estilos.linkRodape}>Entrar</Link>
+            <Link href="/(auth)/login" style={estilos.linkRodape}>
+              Entrar
+            </Link>
           </View>
         </CardFormulario>
-
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const estilos = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: '#EEF2FF' },
-  scroll:      { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  rodape:      { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
-  textoRodape: { color: '#64748B', fontSize: 14 },
-  linkRodape:  { color: '#2563EB', fontSize: 14, fontWeight: '600' },
+  container: { flex: 1, backgroundColor: "#EEF2FF" },
+  scroll: { flexGrow: 1, justifyContent: "center", padding: 24 },
+  rodape: { flexDirection: "row", justifyContent: "center", marginTop: 20 },
+  textoRodape: { color: "#64748B", fontSize: 14 },
+  linkRodape: { color: "#2563EB", fontSize: 14, fontWeight: "600" },
 });

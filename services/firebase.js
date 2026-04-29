@@ -1,11 +1,11 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { 
-  initializeFirestore, 
-  memoryLocalCache, 
-  enableNetwork, 
-  getFirestore 
-} from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import {
+  initializeFirestore,
+  memoryLocalCache,
+  enableNetwork,
+  getFirestore,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAGEfh0N5EUB-Q1Lh2chsJ-mAb-hqdTJ1U",
@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "tccfaculdade-8f487.firebasestorage.app",
   messagingSenderId: "858013689360",
   appId: "1:858013689360:web:5991663a01ece5b5330c95",
-  measurementId: "G-G7C576XC2H"
+  measurementId: "G-G7C576XC2H",
 };
 
 const app = initializeApp(firebaseConfig);

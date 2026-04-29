@@ -1,6 +1,11 @@
-// Layout do grupo de telas não autenticadas (Login, Cadastro, Recuperar Senha)
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
 
 export default function AuthLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="login" />
+      <Stack.Screen name="cadastro" />
+      <Stack.Screen name="recuperar-senha" />
+    </Stack>
+  );
 }
