@@ -1,9 +1,7 @@
 /**
- * 🎓 EXPLICAÇÃO PARA O VÍDEO (REQUISITO HU2 - ROUTE GUARD):
- * "Aqui implementei o segurança do app, chamado de Route Guard."
- * "O sistema monitora o estado de autenticação do Firebase."
- * "Se o usuário não estiver logado, ele é automaticamente impedido de acessar a Home."
- * "Isso garante que dados financeiros só sejam vistos por quem tem conta."
+ * 🎓 EXPLICAÇÃO PARA O VÍDEO (A LÓGICA DO SEGURANÇA):
+ * "Este arquivo é o coração da segurança do app. Eu chamo ele de Route Guard (Guarda de Rota)."
+ * "Ele funciona como um segurança na porta de um shopping: ele verifica se você tem permissão para entrar."
  */
 
 import { useEffect } from 'react';
@@ -11,28 +9,39 @@ import { ActivityIndicator, View } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
+/**
+ * FUNÇÃO: ControleDeRota (O Segurança)
+ * Esta função fica vigiando o usuário o tempo todo.
+ */
 function ControleDeRota() {
+  // 1. useAuth: Pergunta ao Firebase: "Tem alguém logado agora?"
   const { usuario, carregando } = useAuth();
-  const segments = useSegments(); // Qual grupo de rota está ativo
+  
+  // 2. useSegments: Descobre em qual "corredor" do app o usuário está tentando entrar.
+  const segments = useSegments(); 
+  
   const router = useRouter();
 
+  // 3. useEffect: São os "olhos" do segurança. Ele executa toda vez que algo muda.
   useEffect(() => {
-    // Ainda carregando a sessão salva — não faz nada ainda
-    if (carregando) return;
+    if (carregando) return; // Se ainda estiver carregando, o segurança espera.
 
-    // Verifica se o usuário está tentando acessar uma rota protegida
+    // 4. Lógica de Redirecionamento:
+    // Se o usuário NÃO está logado e tenta entrar na HOME (área privada)...
     const estaEmRotaProtegida = segments[0] === '(home)';
 
     if (!usuario && estaEmRotaProtegida) {
-      // Usuário NÃO logado tentando acessar área protegida → manda para Login
+      // ... o segurança barra a entrada e manda ele para o LOGIN.
       router.replace('/(auth)/login');
-    } else if (usuario && !estaEmRotaProtegida) {
-      // Usuário JÁ logado tentando acessar Login/Cadastro → manda para Home
+    } 
+    // Se o usuário JÁ está logado e tenta ir para o LOGIN...
+    else if (usuario && !estaEmRotaProtegida) {
+      // ... o segurança diz: "Você já está logado!" e manda ele para a HOME.
       router.replace('/(home)');
     }
   }, [usuario, carregando, segments]);
 
-  // Enquanto carrega a sessão, mostra um indicador de progresso
+  // Se o app ainda estiver checando o crachá do usuário, mostra uma rodinha de carregamento.
   if (carregando) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F0F4FF' }}>
@@ -41,7 +50,7 @@ function ControleDeRota() {
     );
   }
 
-  // Define a estrutura de navegação: telas de auth e telas protegidas
+  // Se estiver tudo certo, o segurança abre as portas (Stack) para as telas do app.
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" />
@@ -50,7 +59,11 @@ function ControleDeRota() {
   );
 }
 
-// Layout raiz: envolve tudo com o provedor de autenticação
+/**
+ * FUNÇÃO: RootLayout (O Pai de Todos)
+ * Esta é a primeira função que roda no app. Ela abraça todo o projeto
+ * com o "AuthProvider", que é o que permite a todas as telas saberem quem está logado.
+ */
 export default function RootLayout() {
   return (
     <AuthProvider>

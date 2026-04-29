@@ -4,28 +4,30 @@
 // ============================================================
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import { Ionicons } from '@expo/vector-icons'; // Maternal: Ícones SVG agora!
+import { Ionicons } from '@expo/vector-icons'; 
 
 export default function TelaHome() {
   const { usuario, fazerLogout } = useAuth();
 
   const confirmarLogout = () => {
-    Alert.alert(
-      'Sair do App',
-      'Tem certeza que deseja encerrar sua sessão?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Sair',
-          style: 'destructive',
-          onPress: async () => {
-            await fazerLogout();
-          }
-        },
-      ]
-    );
+    // Maternal: No PC (Web), o Alert do celular às vezes não aparece.
+    // Então usamos o 'confirm' que é o padrão dos navegadores.
+    if (Platform.OS === 'web') {
+      if (confirm('Tem certeza que deseja encerrar sua sessão?')) {
+        fazerLogout();
+      }
+    } else {
+      Alert.alert(
+        'Sair do App',
+        'Tem certeza que deseja encerrar sua sessão?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Sair', style: 'destructive', onPress: fazerLogout },
+        ]
+      );
+    }
   };
 
   const primeiroNome = usuario?.displayName?.split(' ')[0] || 'Usuário';
@@ -43,21 +45,20 @@ export default function TelaHome() {
         <Text style={estilos.labelSaldo}>Saldo do Mês</Text>
         <Text style={estilos.valorSaldo}>R$ 0,00</Text>
         <View style={estilos.dividerSaldo} />
-        <Text style={estilos.avisoSaldo}>📊 Lançamentos de gastos chegam no EPIC 2</Text>
+        <Text style={estilos.avisoSaldo}>Acompanhe seus rendimentos e despesas aqui.</Text>
       </View>
 
       <Text style={estilos.secaoTitulo}>Ações Rápidas</Text>
       <View style={estilos.gridAcoes}>
         {[
-          { icone: 'cash-outline', titulo: 'Gastos',    sub: 'EPIC 2' },
-          { icone: 'trending-down', titulo: 'Metas',     sub: 'EPIC 2' },
-          { icone: 'bar-chart-outline', titulo: 'Relatórios', sub: 'EPIC 3' },
-          { icone: 'list-outline', titulo: 'Categorias', sub: 'EPIC 2' },
+          { icone: 'cash-outline', titulo: 'Gastos' },
+          { icone: 'trending-down', titulo: 'Metas' },
+          { icone: 'bar-chart-outline', titulo: 'Relatórios' },
+          { icone: 'list-outline', titulo: 'Categorias' },
         ].map((item) => (
           <View key={item.titulo} style={estilos.cardAcao}>
             <Ionicons name={item.icone} size={32} color="#2563EB" style={{ marginBottom: 8 }} />
             <Text style={estilos.tituloAcao}>{item.titulo}</Text>
-            <Text style={estilos.subAcao}>{item.sub}</Text>
           </View>
         ))}
       </View>

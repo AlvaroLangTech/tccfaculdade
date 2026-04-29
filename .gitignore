@@ -9,3 +9,8 @@ yarn-error.*
 # Ignorar arquivos de documentação pessoal conforme pedido
 *.md
 !README.md
+
+# Pastas de Estudo e Entrega
+ENTREGA_OBRIGATORIA/
+MEUS_ESTUDOS/
+

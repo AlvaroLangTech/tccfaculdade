@@ -9,10 +9,17 @@
 // ============================================================
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import { auth } from '../../services/firebase';
+
+/**
+ * 🎓 EXPLICAÇÃO PARA O VÍDEO (HU4 - RECUPERAÇÃO):
+ * "Aqui temos a função de recuperação de senha."
+ * "O Firebase gera um link seguro e único e o envia diretamente para o e-mail do usuário."
+ * "Isso garante que só o dono do e-mail possa redefinir a senha."
+ */
 
 import CabecalhoAuth  from '../../components/ui/CabecalhoAuth';
 import CardFormulario from '../../components/ui/CardFormulario';
@@ -27,22 +34,28 @@ export default function TelaRecuperarSenha() {
   // ── Envia o link de recuperação via Firebase ────────────────────────────
   // O Firebase gera um token seguro e envia por e-mail (Critério HU4)
   const enviarLink = async () => {
-    if (!email.trim()) return Alert.alert('Atenção', 'Informe seu e-mail!');
+    if (!email.trim()) {
+      const msg = 'Informe seu e-mail!';
+      return Platform.OS === 'web' ? alert(msg) : Alert.alert('Atenção', msg);
+    }
 
     setCarregando(true);
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert(
-        'E-mail enviado! 📧',
-        'Verifique sua caixa de entrada e siga o link para criar uma nova senha.',
-        [{ text: 'Voltar ao Login', onPress: () => router.replace('/(auth)/login') }]
-      );
+      
+      if (Platform.OS === 'web') {
+        alert('E-mail enviado! Verifique sua caixa de entrada.');
+        router.replace('/(auth)/login');
+      } else {
+        Alert.alert(
+          'E-mail enviado! 📧',
+          'Verifique sua caixa de entrada para criar uma nova senha.',
+          [{ text: 'Voltar ao Login', onPress: () => router.replace('/(auth)/login') }]
+        );
+      }
     } catch (erro) {
-      const erros = {
-        'auth/user-not-found': 'Nenhuma conta encontrada com este e-mail.',
-        'auth/invalid-email':  'E-mail inválido.',
-      };
-      Alert.alert('Erro', erros[erro.code] || 'Erro ao enviar e-mail.');
+      const msg = erro.code === 'auth/user-not-found' ? 'E-mail não encontrado.' : 'Erro ao enviar e-mail.';
+      Platform.OS === 'web' ? alert(msg) : Alert.alert('Erro', msg);
     } finally {
       setCarregando(false);
     }

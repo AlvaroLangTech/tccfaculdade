@@ -1,14 +1,16 @@
 // ============================================================
-// CONFIGURAÇÃO DO FIREBASE
-// App: tccFaculdade | Projeto: App de Controle de Gastos Pessoais
+// 🎓 CONFIGURAÇÃO DO FIREBASE (Módulo de Segurança Sênior)
 // ============================================================
-
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { 
+  initializeFirestore, 
+  memoryLocalCache, 
+  enableNetwork, 
+  getFirestore 
+} from 'firebase/firestore';
 
-// Chaves de configuração do projeto no Firebase Console
-// Obtidas em: console.firebase.google.com → tccFaculdade → Configurações
+// 1. Chaves do Projeto (NUNCA mudar estas chaves)
 const firebaseConfig = {
   apiKey: "AIzaSyAGEfh0N5EUB-Q1Lh2chsJ-mAb-hqdTJ1U",
   authDomain: "tccfaculdade-8f487.firebaseapp.com",
@@ -19,13 +21,30 @@ const firebaseConfig = {
   measurementId: "G-G7C576XC2H"
 };
 
-// Inicializa o app Firebase com as configurações acima
+// 2. Inicialização do App
 const app = initializeApp(firebaseConfig);
 
-// Serviço de autenticação (login, cadastro, logout, recuperação de senha)
+// 3. Serviço de Autenticação
 export const auth = getAuth(app);
 
-// Banco de dados Firestore (armazena dados do perfil do usuário)
-export const db = getFirestore(app);
+// 4. Inicialização Segura do Firestore (Proteção contra erro "already declared")
+let dbInstance;
+try {
+  dbInstance = initializeFirestore(app, {
+    experimentalForceLongPolling: true, // Estabilidade no Web
+    useFetchStreams: false,             // Evita travamentos no Chrome
+    localCache: memoryLocalCache(),    // Ignora cache bugado do navegador
+  });
+} catch (e) {
+  // Se já estiver rodando, apenas pega a instância que já existe
+  dbInstance = getFirestore(app);
+}
+
+export const db = dbInstance;
+
+// 5. Comando de Força Bruta para Conexão
+enableNetwork(db).catch(() => {
+  /* Silencioso: Se falhar aqui, o app tenta reconectar sozinho depois */
+});
 
 export default app;

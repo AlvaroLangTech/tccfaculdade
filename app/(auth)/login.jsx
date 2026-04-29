@@ -11,6 +11,12 @@ import CardFormulario from '../../components/ui/CardFormulario';
 import CampoTexto     from '../../components/ui/CampoTexto';
 import BotaoPrimario  from '../../components/ui/BotaoPrimario';
 
+/**
+ * 🎓 EXPLICAÇÃO PARA O VÍDEO (HU2 - LOGIN SEGURO):
+ * "Esta é a tela de Login, onde o Firebase Auth faz a validação das credenciais."
+ * "Aqui eu trato os erros de forma silenciosa e amigável para o usuário."
+ */
+
 export default function TelaLogin() {
   const [email, setEmail]     = useState('');
   const [senha, setSenha]     = useState('');
@@ -29,9 +35,14 @@ export default function TelaLogin() {
 
     setCarregando(true);
     try {
+      // O Firebase Auth valida o e-mail e o hash da senha
       await signInWithEmailAndPassword(auth, email, senha);
     } catch (erro) {
-      Alert.alert('Erro', 'E-mail ou senha incorretos');
+      console.log("ERRO DO FIREBASE:", erro.code); // Isso vai nos dizer o motivo real!
+      
+      // Maternal: No PC usamos alert, no celular usamos Alert.alert
+      const msg = 'E-mail ou senha incorretos. Verifique seus dados.';
+      Platform.OS === 'web' ? alert(msg) : Alert.alert('Erro', msg);
     } finally {
       setCarregando(false);
     }
