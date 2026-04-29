@@ -1,0 +1,85 @@
+# Histórias de Usuário - EPIC 1: Autenticação e Registro (Nível Sênior)
+
+**Aluno:** Alvaro Noronha Pereira  
+**Projeto:** App de Controle de Gastos Pessoais  
+**EPIC 1:** Sistema de Autenticação e Cadastro
+
+---
+
+## HU1 - Registro de Usuário com Validação Híbrida e Persistência Segura [ALTA COMPLEXIDADE]
+**História de usuário ID:** 1  
+**EPIC:** EPIC 1: Autenticação e Registro de Usuários  
+**História do Usuário:** Registro e Criação de Conta  
+**Como [persona]:** Como um novo usuário preocupado com a integridade dos meus dados,  
+**Quer [ação]:** quero me cadastrar no aplicativo através de um formulário com validações em tempo real e armazenamento criptografado,  
+**Para que? [resultado]:** para garantir que apenas dados válidos entrem no sistema e que minha senha nunca seja exposta em texto claro.  
+**Qual o critério de aceite?**
+- **Validação de Client-side:** Implementar Regex para validação de e-mail e força de senha (letras, números e símbolos).
+- **Criptografia de Ponta:** A senha deve ser processada via Hash/Salt (ex: Bcrypt ou SHA-256 via Firebase Auth) antes da persistência.
+- **Verificação de Unicidade:** O sistema deve consultar o banco de dados e impedir registros duplicados de e-mail.
+- **Feedback de Erro:** Exibir mensagens de validação instantâneas em cada campo do formulário.
+- **Persistência Inicial:** Após o sucesso, deve-se criar o documento de perfil do usuário no Firestore/Realtime Database.  
+**STATUS:** Aguardando avaliação
+
+---
+
+## HU2 - Sistema de Autenticação Robusta e Gestão de Sessão (JWT/Tokens) [ALTA COMPLEXIDADE]
+**História de usuário ID:** 2  
+**EPIC:** EPIC 1: Autenticação e Registro de Usuários  
+**História do Usuário:** Autenticação e Controle de Acesso  
+**Como [persona]:** Como um usuário recorrente do aplicativo,  
+**Quer [ação]:** quero realizar login seguro com gestão de tokens de acesso e proteção de rotas,  
+**Para que? [resultado]:** para que eu possa navegar pelas minhas finanças sem precisar relogar constantemente, mantendo o acesso restrito a mim.  
+**Qual o critério de aceite?**
+- **Handshake de Autenticação:** Comparação segura de credenciais via Firebase Auth API ou Backend próprio.
+- **Route Guards:** Implementar middlewares/guardiões que bloqueiem o acesso às telas de "Gastos" e "Metas" para usuários não autenticados.
+- **Gestão de Token:** O sistema deve armazenar de forma segura o token de sessão (Local Storage/Secure Storage).
+- **Persistência de Estado:** Ao abrir o app, deve verificar se existe um token válido e redirecionar para a Home automaticamente.
+- **Tratamento de Exceções:** Implementar lógica para "Usuário não encontrado" e "Senha incorreta" com delay em tentativas sucessivas (proteção contra brute force).  
+**STATUS:** Aguardando avaliação
+
+---
+
+## HU3 - Manutenção de Dados de Perfil e Preferências [BAIXA COMPLEXIDADE]
+**História de usuário ID:** 3  
+**EPIC:** EPIC 1: Autenticação e Registro de Usuários  
+**História do Usuário:** Edição de Perfil de Usuário  
+**Como [persona]:** Como um usuário que deseja manter seus dados atualizados,  
+**Quer [ação]:** quero poder editar meu nome de exibição e foto de perfil,  
+**Para que? [resultado]:** para que a interface do aplicativo seja personalizada com minhas informações atuais.  
+**Qual o critério de aceite?**
+- Disponibilizar formulário de edição dentro da aba de configurações.
+- Validar se o campo "Nome" não está vazio.
+- Atualizar os dados de forma assíncrona no banco de dados do usuário.
+- Refletir as mudanças imediatamente no Header do aplicativo.  
+**STATUS:** Aguardando avaliação
+
+---
+
+## HU4 - Redefinição de Senha via Fluxo de Recuperação [BAIXA COMPLEXIDADE]
+**História de usuário ID:** 4  
+**EPIC:** EPIC 1: Autenticação e Registro de Usuários  
+**História do Usuário:** Recuperação de Credenciais  
+**Como [persona]:** Como um usuário que perdeu o acesso à sua conta,  
+**Quer [ação]:** quero solicitar um link de redefinição de senha através do meu e-mail,  
+**Para que? [resultado]:** para que eu possa resetar minha credencial de forma segura e retomar o controle do meu orçamento.  
+**Qual o critério de aceite?**
+- Interface de "Esqueci minha senha" conectada ao serviço de e-mail.
+- Envio de token temporário ou link seguro de redefinição.
+- Interface para digitação da nova senha com confirmação (Double input validation).  
+**STATUS:** Aguardando avaliação
+
+---
+
+## HU5 - Encerramento de Sessão e Segurança de Saída (Logout) [BAIXA COMPLEXIDADE]
+**História de usuário ID:** 5  
+**EPIC:** EPIC 1: Autenticação e Registro de Usuários  
+**História do Usuário:** Logout e Limpeza de Dados Locais  
+**Como [persona]:** Como um usuário preocupado com a segurança em dispositivos compartilhados,  
+**Quer [ação]:** quero encerrar minha sessão e limpar meus dados de acesso local,  
+**Para que? [resultado]:** para ter a garantia de que ninguém poderá acessar meu histórico financeiro após eu sair do aplicativo.  
+**Qual o critério de aceite?**
+- Botão "Sair" com confirmação visual para evitar encerramentos acidentais.
+- Invalidação total do token de autenticação no dispositivo.
+- Redirecionamento mandatório para a tela de Login inicial.  
+**STATUS:** Aguardando avaliação
