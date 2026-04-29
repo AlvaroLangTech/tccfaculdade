@@ -7,7 +7,6 @@ import {
   getFirestore 
 } from 'firebase/firestore';
 
-// Configurações do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAGEfh0N5EUB-Q1Lh2chsJ-mAb-hqdTJ1U",
   authDomain: "tccfaculdade-8f487.firebaseapp.com",
@@ -21,7 +20,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// Inicialização resiliente do Firestore para ambiente Web/HMR
 let dbInstance;
 try {
   dbInstance = initializeFirestore(app, {
@@ -35,7 +33,6 @@ try {
 
 export const db = dbInstance;
 
-// Força tentativa de conexão ao carregar o serviço
 enableNetwork(db).catch(() => {});
 
 export default app;

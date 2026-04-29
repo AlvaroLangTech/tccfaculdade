@@ -1,8 +1,3 @@
-// ============================================================
-// TELA INICIAL — HOME (HU5: Logout com confirmação)
-// Dashboard básico que será expandido no EPIC 2
-// ============================================================
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
@@ -12,8 +7,6 @@ export default function TelaHome() {
   const { usuario, fazerLogout } = useAuth();
 
   const confirmarLogout = () => {
-    // Maternal: No PC (Web), o Alert do celular às vezes não aparece.
-    // Então usamos o 'confirm' que é o padrão dos navegadores.
     if (Platform.OS === 'web') {
       if (confirm('Tem certeza que deseja encerrar sua sessão?')) {
         fazerLogout();
@@ -35,7 +28,6 @@ export default function TelaHome() {
   return (
     <ScrollView style={estilos.container} contentContainerStyle={estilos.conteudo}>
 
-      {/* Saudação (Modo Sênior: Sem emojis excessivos) */}
       <View style={estilos.saudacao}>
         <Text style={estilos.ola}>Olá, {primeiroNome}</Text>
         <Text style={estilos.data}>{new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
@@ -87,8 +79,6 @@ const estilos = StyleSheet.create({
   gridAcoes:     { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },
   cardAcao:      { backgroundColor: '#fff', borderRadius: 16, padding: 16, alignItems: 'center', width: '47%', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
   tituloAcao:    { fontSize: 13, fontWeight: '700', color: '#1E293B' },
-  subAcao:       { fontSize: 11, color: '#94A3B8', marginTop: 3, backgroundColor: '#F1F5F9', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   botaoSair:     { backgroundColor: '#FEF2F2', borderWidth: 1.5, borderColor: '#FCA5A5', borderRadius: 12, padding: 16, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
   textoBotaoSair:{ color: '#DC2626', fontSize: 15, fontWeight: '700' },
 });
-

@@ -1,25 +1,8 @@
-// ============================================================
-// TELA: Recuperar Senha (HU4 — Recuperação de Credenciais)
-//
-// Fluxo:
-//  1. Usuário informa o e-mail cadastrado
-//  2. Firebase gera um token temporário seguro
-//  3. Envia um link de redefinição para o e-mail
-//  4. O link expira automaticamente após 1 hora
-// ============================================================
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import { auth } from '../../services/firebase';
-
-/**
- * 🎓 EXPLICAÇÃO PARA O VÍDEO (HU4 - RECUPERAÇÃO):
- * "Aqui temos a função de recuperação de senha."
- * "O Firebase gera um link seguro e único e o envia diretamente para o e-mail do usuário."
- * "Isso garante que só o dono do e-mail possa redefinir a senha."
- */
 
 import CabecalhoAuth  from '../../components/ui/CabecalhoAuth';
 import CardFormulario from '../../components/ui/CardFormulario';
@@ -31,8 +14,6 @@ export default function TelaRecuperarSenha() {
   const [carregando, setCarregando] = useState(false);
   const router = useRouter();
 
-  // ── Envia o link de recuperação via Firebase ────────────────────────────
-  // O Firebase gera um token seguro e envia por e-mail (Critério HU4)
   const enviarLink = async () => {
     if (!email.trim()) {
       const msg = 'Informe seu e-mail!';
@@ -75,7 +56,6 @@ export default function TelaRecuperarSenha() {
 
         <BotaoPrimario titulo="Enviar Link de Recuperação" onPress={enviarLink} carregando={carregando} cor="#7C3AED" />
 
-        {/* Botão voltar */}
         <TouchableOpacity onPress={() => router.back()} style={estilos.botaoVoltar}>
           <Text style={estilos.textoVoltar}>← Voltar ao Login</Text>
         </TouchableOpacity>

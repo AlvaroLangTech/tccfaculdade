@@ -9,10 +9,6 @@ import CardFormulario from '../../components/ui/CardFormulario';
 import CampoTexto     from '../../components/ui/CampoTexto';
 import BotaoPrimario  from '../../components/ui/BotaoPrimario';
 
-/**
- * Tela de Perfil do Usuário (HU3)
- * Permite a edição de nome e URL da foto com sincronização em tempo real.
- */
 export default function TelaPerfil() {
   const { usuario }               = useAuth();
   const [nome, setNome]           = useState('');
@@ -20,7 +16,6 @@ export default function TelaPerfil() {
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando]   = useState(false);
 
-  // Sincronização com Firestore (onSnapshot)
   useEffect(() => {
     if (!usuario) return;
 
@@ -38,7 +33,6 @@ export default function TelaPerfil() {
       }
     );
 
-    // Fallback de segurança para encerrar o loading
     const timer = setTimeout(() => setCarregando(false), 5000);
 
     return () => {
@@ -47,7 +41,6 @@ export default function TelaPerfil() {
     };
   }, [usuario]);
 
-  // Salva alterações no Auth e Firestore
   const salvarAlteracoes = async () => {
     if (!nome.trim()) {
       const msg = 'O nome não pode ser vazio.';
@@ -56,13 +49,11 @@ export default function TelaPerfil() {
 
     setSalvando(true);
     try {
-      // 1. Atualiza Perfil de Autenticação
       await updateProfile(usuario, {
         displayName: nome,
         photoURL: foto
       });
 
-      // 2. Persiste no Firestore com Timeout de segurança
       const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
       
       try {
@@ -76,7 +67,7 @@ export default function TelaPerfil() {
           timeoutPromise
         ]);
       } catch (err) {
-        console.warn("Salvamento no Firestore excedeu o tempo, mas Auth foi atualizado.");
+        console.warn("Firestore timeout.");
       }
 
       await usuario.reload();

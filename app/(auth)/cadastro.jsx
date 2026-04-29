@@ -1,10 +1,3 @@
-/**
- * 🎓 ROTEIRO DA DEMONSTRAÇÃO PRÁTICA (VÍDEO):
- * 1. Tente cadastrar com senha simples (ex: 12345) e mostre o erro.
- * 2. Crie uma conta real e mostre que o app te leva para a Home.
- * "Vejam que o sistema barra senhas fracas e cria a conta de forma assíncrona no Firebase."
- */
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -26,12 +19,10 @@ export default function TelaCadastro() {
   const [erros, setErros]           = useState({});
   const [carregando, setCarregando] = useState(false);
 
-  // Função para realizar o cadastro do usuário
   const fazerCadastro = async () => {
     setErros({});
     let novosErros = {};
 
-    // Validações de formulário (HU1)
     if (!nome.trim())             novosErros.nome = 'Informe seu nome';
     if (!validarEmail(email))     novosErros.email = 'E-mail inválido';
     if (!validarSenhaForte(senha)) novosErros.senha = 'Senha fraca (letras, números e símbolos)';
@@ -44,11 +35,9 @@ export default function TelaCadastro() {
 
     setCarregando(true);
     try {
-      // Criação de usuário no Firebase Auth
       const { user } = await createUserWithEmailAndPassword(auth, email, senha);
       await updateProfile(user, { displayName: nome });
 
-      // Persistência dos dados no Firestore
       await setDoc(doc(db, 'usuarios', user.uid), {
         nome,
         email,
@@ -103,5 +92,3 @@ const estilos = StyleSheet.create({
   textoRodape: { color: '#64748B', fontSize: 14 },
   linkRodape:  { color: '#2563EB', fontSize: 14, fontWeight: '600' },
 });
-
-
