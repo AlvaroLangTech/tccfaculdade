@@ -9,6 +9,10 @@ import CardFormulario from '../../components/ui/CardFormulario';
 import CampoTexto     from '../../components/ui/CampoTexto';
 import BotaoPrimario  from '../../components/ui/BotaoPrimario';
 
+/**
+ * Tela de Perfil do Usuário (HU3)
+ * Permite a edição de nome e URL da foto com sincronização em tempo real.
+ */
 export default function TelaPerfil() {
   const { usuario }               = useAuth();
   const [nome, setNome]           = useState('');
@@ -16,67 +20,51 @@ export default function TelaPerfil() {
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando]   = useState(false);
 
-  // MODO RESILIENTE: Escuta o banco de dados em tempo real
+  // Sincronização com Firestore (onSnapshot)
   useEffect(() => {
     if (!usuario) return;
 
-    console.log("📡 Abrindo canal de comunicação em tempo real...");
-    
-    // 1. Criamos um "ouvinte" (onSnapshot)
     const cancelarEscuta = onSnapshot(doc(db, 'usuarios', usuario.uid), 
       (doc) => {
         if (doc.exists()) {
           const dados = doc.data();
           setNome(dados.nome || '');
           setFoto(dados.fotoPerfil || '');
-          console.log("✅ Dados recebidos via Realtime!");
         }
-        setCarregando(false); // Assim que recebermos resposta (mesmo vazia), paramos o loading
+        setCarregando(false);
       },
-      (erro) => {
-        console.error("❌ Erro no canal Realtime:", erro.message);
-        // Se der erro, não travamos a tela, deixamos o usuário preencher
+      () => {
         setCarregando(false);
       }
     );
 
-    // 2. Segurança: Se em 5 segundos o Firebase não responder, liberamos a tela
-    const timerSeguranca = setTimeout(() => {
-      setCarregando(false);
-    }, 5000);
+    // Fallback de segurança para encerrar o loading
+    const timer = setTimeout(() => setCarregando(false), 5000);
 
     return () => {
       cancelarEscuta();
-      clearTimeout(timerSeguranca);
+      clearTimeout(timer);
     };
   }, [usuario]);
 
+  // Salva alterações no Auth e Firestore
   const salvarAlteracoes = async () => {
     if (!nome.trim()) {
       const msg = 'O nome não pode ser vazio.';
       return Platform.OS === 'web' ? alert(msg) : Alert.alert('Atenção', msg);
     }
 
-    console.log("💾 Iniciando processo de salvamento...");
     setSalvando(true);
-    
     try {
-      // 1. Primeiro atualizamos o perfil de Autenticação (Mais rápido e estável)
-      console.log("👤 Atualizando Auth Profile...");
+      // 1. Atualiza Perfil de Autenticação
       await updateProfile(usuario, {
         displayName: nome,
         photoURL: foto
       });
-      console.log("✅ Auth Profile atualizado!");
 
-      // 2. Depois tentamos o Firestore (Banco de dados)
-      console.log("📡 Gravando no Firestore (com timeout)...");
+      // 2. Persiste no Firestore com Timeout de segurança
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
       
-      // MODO SÊNIOR: Criamos uma promessa que "desiste" se demorar mais de 5s
-      const timeoutFirestore = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('timeout')), 5000)
-      );
-
       try {
         await Promise.race([
           setDoc(doc(db, 'usuarios', usuario.uid), {
@@ -85,37 +73,26 @@ export default function TelaPerfil() {
             email: usuario.email,
             atualizadoEm: new Date().toISOString()
           }, { merge: true }),
-          timeoutFirestore
+          timeoutPromise
         ]);
-        console.log("✅ Firestore atualizado!");
       } catch (err) {
-        console.warn("⚠️ Firestore demorou demais, mas o perfil básico foi salvo!");
+        console.warn("Salvamento no Firestore excedeu o tempo, mas Auth foi atualizado.");
       }
 
-      // 3. Recarrega o usuário para refletir no cabeçalho
       await usuario.reload();
-      console.log("✅ Usuário recarregado!");
-
       const msgSucesso = 'Perfil atualizado com sucesso! 🎉';
-      if (Platform.OS === 'web') {
-        alert(msgSucesso);
-      } else {
-        Alert.alert('Sucesso!', msgSucesso);
-      }
+      Platform.OS === 'web' ? alert(msgSucesso) : Alert.alert('Sucesso!', msgSucesso);
     } catch (e) {
-      console.error("❌ ERRO AO SALVAR:", e.message);
-      const msgErro = 'Não foi possível completar o salvamento.';
+      const msgErro = 'Erro ao salvar alterações.';
       Platform.OS === 'web' ? alert(msgErro) : Alert.alert('Erro', msgErro);
     } finally {
       setSalvando(false);
-      console.log("🏁 Fim do processo de salvamento.");
     }
   };
 
   if (carregando) return (
     <View style={estilos.centralizado}>
       <ActivityIndicator size="large" color="#2563EB" />
-      <Text style={{marginTop: 10, color: '#64748B'}}>Sincronizando com a nuvem...</Text>
     </View>
   );
 

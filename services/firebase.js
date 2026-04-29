@@ -1,6 +1,3 @@
-// ============================================================
-// 🎓 CONFIGURAÇÃO DO FIREBASE (Módulo de Segurança Sênior)
-// ============================================================
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { 
@@ -10,7 +7,7 @@ import {
   getFirestore 
 } from 'firebase/firestore';
 
-// 1. Chaves do Projeto (NUNCA mudar estas chaves)
+// Configurações do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAGEfh0N5EUB-Q1Lh2chsJ-mAb-hqdTJ1U",
   authDomain: "tccfaculdade-8f487.firebaseapp.com",
@@ -21,30 +18,24 @@ const firebaseConfig = {
   measurementId: "G-G7C576XC2H"
 };
 
-// 2. Inicialização do App
 const app = initializeApp(firebaseConfig);
-
-// 3. Serviço de Autenticação
 export const auth = getAuth(app);
 
-// 4. Inicialização Segura do Firestore (Proteção contra erro "already declared")
+// Inicialização resiliente do Firestore para ambiente Web/HMR
 let dbInstance;
 try {
   dbInstance = initializeFirestore(app, {
-    experimentalForceLongPolling: true, // Estabilidade no Web
-    useFetchStreams: false,             // Evita travamentos no Chrome
-    localCache: memoryLocalCache(),    // Ignora cache bugado do navegador
+    experimentalForceLongPolling: true,
+    useFetchStreams: false,
+    localCache: memoryLocalCache(),
   });
 } catch (e) {
-  // Se já estiver rodando, apenas pega a instância que já existe
   dbInstance = getFirestore(app);
 }
 
 export const db = dbInstance;
 
-// 5. Comando de Força Bruta para Conexão
-enableNetwork(db).catch(() => {
-  /* Silencioso: Se falhar aqui, o app tenta reconectar sozinho depois */
-});
+// Força tentativa de conexão ao carregar o serviço
+enableNetwork(db).catch(() => {});
 
 export default app;
